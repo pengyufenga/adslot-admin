@@ -10,14 +10,15 @@ import (
 
 var DB *gorm.DB
 
-func init()  {
+func init() {
 	log.Println("开始初始化数据库连接，gorm...........")
 	var conn = config.Config.GetString("sqlConn")
 	db, err := gorm.Open("mysql", conn)
 	if err != nil {
-		log.Fatal("gorm open 失败:",err)
+		log.Fatal("gorm open 失败:", err)
 		return
 	}
+	db.LogMode(true)
 	//设置连接池
 	//空闲
 	db.DB().SetMaxIdleConns(50)
@@ -25,6 +26,6 @@ func init()  {
 	db.DB().SetMaxOpenConns(100)
 	//超时
 	db.DB().SetConnMaxLifetime(time.Second * 30)
-	DB = db
+	DB = db.Debug()
 	log.Println("数据库连接初始化成功...............")
 }

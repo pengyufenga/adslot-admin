@@ -58,18 +58,76 @@ func GetAllAdslot(c *gin.Context) {
 }
 
 //新增广告位信息
-func AddAdslot(c *gin.Context)  {
+func AddAdslot(c *gin.Context) {
 	//当前时间
 	now := time.Now()
 
-	var adslotDao model.Adslot
-	adslotDao.CreateTime = now
-	adslotDao.ModifyTime = now
+	var adslot model.Adslot
 	//获取传参
-	err := c.ShouldBindJSON(&adslotDao)
-	if err != nil{
-		c.JSON(http.StatusBadRequest,model.FailResult("参数绑定异常",err))
-	}else {
-
+	err := c.ShouldBindJSON(&adslot)
+	if err != nil {
+		log.Printf("新增Adslot失败,参数绑定异常，err=[%s]", err.Error())
+		c.JSON(http.StatusBadRequest, model.FailResult("参数绑定异常", err))
+	} else {
+		adslot.CreateTime = now
+		adslot.ModifyTime = now
+		log.Printf("新增Adslot:[%v]", adslot)
+		err := adslot.AddAdslot()
+		if err != nil {
+			log.Printf("新增Adslot失败，err=[%s]", err.Error())
+			c.JSON(http.StatusBadRequest, model.FailResult("新增Adslot失败", err))
+		} else {
+			c.JSON(http.StatusOK, model.SuccessResult(adslot))
+		}
 	}
+}
+
+//更新广告位信息
+func UpdateAdslot(c *gin.Context) {
+	now := time.Now()
+
+	var adslot model.Adslot
+	//获取参数
+	err := c.ShouldBindJSON(&adslot)
+	if err != nil {
+		log.Printf("更新Adslot失败,参数绑定异常，err=[%s]", err.Error())
+		c.JSON(http.StatusBadRequest, model.FailResult("参数绑定异常", err))
+	} else {
+		adslot.ModifyTime = now
+		log.Printf("更新Adslot:[%+v]", adslot)
+		err := adslot.UpdateAdslot()
+		if err != nil {
+			log.Printf("更新Adslot失败，err=[%s]", err.Error())
+			c.JSON(http.StatusBadRequest, model.FailResult("更新Adslot失败", err))
+		} else {
+			c.JSON(http.StatusOK, model.SuccessResult(adslot))
+		}
+	}
+
+}
+
+//删除广告位信息
+func DeleteAdslot(c *gin.Context) {
+	var adslot model.Adslot
+	//获取参数
+	param := c.Param("id")
+	id := com.StrTo(param).MustInt64()
+	adslot.Id = id
+	//查找该条记录是否存在
+	_, err := adslot.GetAdslot()
+	if err != nil {
+		log.Printf("删除Adslot，该Adslot不存在，AdslotId:[%v]", id)
+		c.JSON(http.StatusBadRequest, model.FailResult("未找到该Adslot", err))
+	} else {
+		//存在则删除
+		err := adslot.DeleteAdslot()
+		if err != nil {
+			log.Printf("删除Adslot,失败，err=[%s]", err.Error())
+			c.JSON(http.StatusBadRequest, model.FailResult("删除Adslot失败", err))
+		} else {
+			log.Printf("删除Adslot成功,AdslotId:[%v]", id)
+			c.JSON(http.StatusOK, model.SuccessResult(id))
+		}
+	}
+
 }
