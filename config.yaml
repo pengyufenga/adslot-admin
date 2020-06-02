@@ -1,0 +1,5 @@
+#监听端口
+port: 9000
+
+#数据库配置
+sqlConn: root:123456@tcp(192.168.3.56:3306)/ad?charset=utf8&parseTime=True&loc=Local
