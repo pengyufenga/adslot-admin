@@ -44,6 +44,20 @@ func InitRouter() *gin.Engine {
 	r.PUT("/sdk-channel/update", service.UpdateSdkChannel)
 	r.DELETE("/sdk-channel/delete/:id", service.DeleteSdkChannel)
 
+	//sdk_js模块路由
+	r.GET("/sdk-jsscript/detail/:id", service.GetSdkJs)
+	r.POST("/sdk-jsscript/list", service.GetAllSdkJs)
+	r.POST("/sdk-jsscript/add", service.AddSdkJs)
+	r.PUT("/sdk-jsscript/update", service.UpdateSdkJs)
+	r.DELETE("/sdk-jsscript/delete/:id", service.DeleteSdkJs)
+
+	//sdk_version模块路由
+	r.GET("/sdk-version/detail/:id", service.GetSdkVersion)
+	r.POST("/sdk-version/list", service.GetAllSdkVersion)
+	r.POST("/sdk-version/add", service.AddSdkVersion)
+	r.PUT("/sdk-version/update", service.UpdateSdkVersion)
+	r.DELETE("/sdk-version/delete/:id", service.DeleteSdkVersion)
+
 	r.GET("/", func(context *gin.Context) {
 		context.JSON(http.StatusOK, "hello")
 	})
